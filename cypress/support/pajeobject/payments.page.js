@@ -46,5 +46,5 @@ export default class PaymentsPage {
       'div[data-field-name="statuses"] .radio-group__checkbox--first .checkbox__icon'
     );
 
-  popUpMessage = () => cy.get(".layout__content .notification__body");
+  popUpSuccess = () => cy.get(".notification--type-success");
 }

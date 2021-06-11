@@ -2,13 +2,12 @@ import PaymentsPage from "../support/pajeobject/payments.page";
 const paymentsPage = new PaymentsPage();
 
 context("Payments", () => {
-  before(() => {
+  beforeEach(() => {
     cy.visit("https://finance.dev.fabrique.studio/");
+    cy.login('business@business.com', '123123');
   });
 
   it("Elements exists", () => {
-    cy.login("business@business.com", "123123");
-
     paymentsPage.rowSource().should("be.visible");
     paymentsPage.rowCategory().should("be.visible");
     paymentsPage.rowAmountFact().should("be.visible");
@@ -22,22 +21,23 @@ context("Payments", () => {
     paymentsPage.fieldDescription().type("Описание");
     paymentsPage.fieldSumFact().type("100");
     paymentsPage.btnSubmit().click();
-    paymentsPage.popUpMessage().should("have.text", "Платеж успешно сохранен");
+    paymentsPage.popUpSuccess().should("contain.text", "Платеж успешно сохранен");
   });
 
   it("shouldn't create a payment if required fields are not filling in", () => {
     paymentsPage.btnCreatePayment().click();
     paymentsPage.fieldSumFact().type("100");
     paymentsPage.btnSubmit().click();
-    paymentsPage.popUpMessage().should("have.text", "Ошибка");
+    cy.wait(100)
+    paymentsPage.popUpSuccess().should("not.contain.text", "Платеж успешно сохранен");
   });
 
   it("shouldn't create a payment if required fields are not filling in", () => {
     paymentsPage.btnCreatePayment().click();
     paymentsPage.fieldDescription().type("Описание");
     paymentsPage.btnSubmit().click();
-    //cy.wait(200)
-    paymentsPage.popUpMessage().should("not.exist", "Платеж успешно сохранен");
+    cy.wait(100)
+    paymentsPage.popUpSuccess().should("not.contain.text", "Платеж успешно сохранен");
   });
 
   it("should create payment with filling all fields", () => {
@@ -61,6 +61,6 @@ context("Payments", () => {
     paymentsPage.fieldAccountRecipient().type("123456").type("{enter}");
     paymentsPage.fieldTags().type("test").type("{enter}");
     paymentsPage.btnSubmit().click();
-    paymentsPage.popUpMessage().should("have.text", "Платеж успешно сохранен");
+    paymentsPage.popUpSuccess().should("have.text", "Платеж успешно сохранен");
   });
 });
